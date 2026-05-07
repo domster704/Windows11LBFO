@@ -39,9 +39,13 @@ function Ensure-Admin {
 }
 
 function Ensure-System {
-  $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-  Log "Current security context: $identity" Cyan
-  if ($identity -eq 'NT AUTHORITY\SYSTEM') { return }
+  $id = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+  $identity = $id.Name
+  $sid = $id.User.Value
+
+  Log "Current security context: $identity / SID: $sid" Cyan
+
+  if ($sid -eq 'S-1-5-18') { return }
 
   Ensure-Admin
   $psexec = Join-Path $PSScriptRoot 'PsExec.exe'
